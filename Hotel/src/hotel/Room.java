@@ -10,7 +10,7 @@ public class Room extends RoomBasic implements Serializable{
 	
 	public String toString()
 	{
-		return "Room: "+getRoomNumber()+
+		return super.toString()+"Room: "+getRoomNumber()+
 				"\nPrice Per Day"+getPrice();
 	}
 
@@ -20,5 +20,7 @@ public class Room extends RoomBasic implements Serializable{
 		else
 			return getPrice()*days*tax;
 	}
+	
+	
 
 }

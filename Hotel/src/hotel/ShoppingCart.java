@@ -1,5 +1,4 @@
 package hotel;
-//To be continued...
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -31,6 +30,7 @@ public class ShoppingCart {
         }
     }
 
+    //calculate total price
     public double getTotalPrice() {
         double total = 0.0;
         for (double price : cart.values()) {
@@ -39,11 +39,13 @@ public class ShoppingCart {
         return total;
     }
     
+    //num of items
     public int getSize()
     {
     	return cart.size();
     }
     
+    //return all entry sets
     public Set<Entry<String, Double>> getEntrySets()
     {
     	return cart.entrySet();

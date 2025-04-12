@@ -18,6 +18,8 @@ public abstract class Staffs extends Human implements Serializable{
 		this.setJobtype(jobtype);
 		this.setJobDescription(JobDescription);
 	}
+	
+	///heres set and get methods for these properties
 	public double getSalary() {
 		return salary;
 	}

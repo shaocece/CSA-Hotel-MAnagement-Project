@@ -22,6 +22,7 @@ public abstract class RoomBasic implements Serializable {
 		this.setBedType(bedType);
 		WaitingQueue=new ArrayList<String>();
 	}
+	//set and get for basic properties
 	void changePrice(double new_price)
 	{
 		setPrice(new_price);
@@ -104,6 +105,7 @@ public abstract class RoomBasic implements Serializable {
 		CurrentResident = currentResident;
 	}
 	
+	//add days to date object
 	public void addDays(int date)
 	{
 		Calendar cal=Calendar.getInstance();

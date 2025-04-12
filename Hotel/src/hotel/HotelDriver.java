@@ -36,7 +36,7 @@ public class HotelDriver implements GeneralOperations{
 	private static JButton btnSignUp;
 	private static JLabel lblWelcomeToThe;
 	private static JButton btnCart;
-	public static JButton btnBook;
+	private static JButton btnBook;
 	private static ShoppingCart cart; 
 	private static double total;
 	///Used for generating check in date
@@ -68,7 +68,7 @@ public class HotelDriver implements GeneralOperations{
 				}
 			}
 		});
-	}
+}
 
 	/**
 	 * Create the application.
@@ -383,7 +383,7 @@ public class HotelDriver implements GeneralOperations{
 				char[] passwords = passwordField.getPassword();
 				String passcode=new String(passwords);
 			    textField.selectAll();
-			    if(text.equals("Admin")&&passcode.equals("Admin123123"))
+			    if(text.equals("Admin")&&passcode.equals("Admin123123"))//enter admin mod here
 			    	{
 			    	frame.setVisible(false);
 			    	login.dispose();
@@ -604,9 +604,9 @@ public class HotelDriver implements GeneralOperations{
 					if(btnCancel.getText()=="Cancel")
 					{
 						int result = JOptionPane.showConfirmDialog(
-						            null,                        // Parent component (null = center of screen)
-									"Are you sure you want to cancel?", // Message
-									"Confirm Exit",              // Title
+						            null,                        // confirm to cancel
+									"Are you sure you want to cancel?", 
+									"Confirm Exit",              
 									JOptionPane.YES_NO_OPTION    // Options: Yes / No
 						);
 						
@@ -614,16 +614,19 @@ public class HotelDriver implements GeneralOperations{
 							{
 							Cancel(RoomNum);
 							frame.dispose();//close the frame
+							///admin add refund method here
 							}
 						} 
 					}
 					else if(btnCancel.getText()=="Extend")
 						ExtendDate(RoomNum);
-					
+					else if(btnCancel.getText()=="Quit")
+						QuitWL(RoomNum);
 				};
 			});
 			btnBook = new JButton("Book");
 			if(Customers.containsKey(LoggedInUsr))
+				{
 				if(Customers.get(LoggedInUsr).getRoom()==RoomNum)
 					{
 					if(!Customers.get(LoggedInUsr).getCheckInStat())//if checked in, no cancel
@@ -640,8 +643,15 @@ public class HotelDriver implements GeneralOperations{
 						btnBook.setText("Check Out");
 					else
 						btnBook.setText("Check In");
+					
 					}
-			else if(VIPRooms.get(RoomNum).getStatus().equals("Occupied")||VIPRooms.get(RoomNum).getStatus().equals("Booked"))
+				else if(Customers.get(LoggedInUsr).getWLroom()==RoomNum)
+				{
+					btnCancel.setText("Quit");
+					btnCancel.setVisible(true);
+				}
+				}
+			else if(VIPRooms.get(RoomNum).getStatus().equals("Occupied")||VIPRooms.get(RoomNum).getStatus().equals("Booked")||VIPRooms.get(RoomNum).getStatus().equals("Reserved"))
 				btnBook.setText("Join Queue");
 			btnBook.setBounds(90, 230, 100, 27);
 			btnBook.addActionListener(new ActionListener() {
@@ -649,7 +659,7 @@ public class HotelDriver implements GeneralOperations{
 					if(btnBook.getText().equals("Book"))
 					{
 						boolean judge=true;
-						for(Entry<String, Double> i:cart.getEntrySets())
+						for(Entry<String, Double> i:cart.getEntrySets())//go through the cart to see if there is any booking options
 	                	{
 	                		String temp=i.getKey().substring(0,3);
 	                		if(isParsableInt(temp)&&(RegRooms.containsKey(Integer.parseInt(temp))||VIPRooms.containsKey(Integer.parseInt(temp))))//if it is a valid room opt
@@ -675,6 +685,7 @@ public class HotelDriver implements GeneralOperations{
 					else if(btnBook.getText().equals("Check Out"))
 					{
 						CheckOut();
+						VIPRooms.get(RoomNum).setDesiredCheckOut(null);
 						if(VIPRooms.get(RoomNum).isNext())
 							VIPRooms.get(RoomNum).setStatus("Reserved");
 						else	
@@ -684,6 +695,14 @@ public class HotelDriver implements GeneralOperations{
 						SaveMechanism.SaveCustomers(Customers);
 						frame.setVisible(false);
 					}
+					else if(btnBook.getText().equals("Join Queue"))
+					{
+						if(Customers.get(LoggedInUsr).getWLroom()==0)
+							JoinQueue(RoomNum);
+						else
+							JOptionPane.showMessageDialog(null, "Can only join one waitlist","Warning",JOptionPane.INFORMATION_MESSAGE);
+					}
+					
 				}
 			});
 			frame.getContentPane().add(btnBook);
@@ -762,41 +781,79 @@ public class HotelDriver implements GeneralOperations{
 			btnCancel.setVisible(false);
 			btnCancel.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					 int result = JOptionPane.showConfirmDialog(
-					            null,                        // Parent component (null = center of screen)
-					            "Are you sure you want to cancel?", // Message
-					            "Confirm Exit",              // Title
-					            JOptionPane.YES_NO_OPTION    // Options: Yes / No
-					        );
-
-					        if (result == JOptionPane.YES_OPTION) {
-					        	{
-					        	Cancel(RoomNum);
-								frame.dispose();//close the frame
-								}
-					        } 
-					
+					if(btnCancel.getText()=="Cancel")
+					{
+						int result = JOptionPane.showConfirmDialog(
+						            null,                        // confirm to cancel
+									"Are you sure you want to cancel?", 
+									"Confirm Exit",              
+									JOptionPane.YES_NO_OPTION    // Options: Yes / No
+						);
+						
+						if (result == JOptionPane.YES_OPTION) {
+							{
+							Cancel(RoomNum);
+							frame.dispose();//close the frame
+							///admin add refund method here
+							}
+						} 
+					}
+					else if(btnCancel.getText()=="Extend")
+						ExtendDate(RoomNum);
+					else if(btnCancel.getText()=="Quit")
+						QuitWL(RoomNum);
 				};
 			});
 			
 			btnBook = new JButton("Book");
 			if(Customers.containsKey(LoggedInUsr))
+				{
 				if(Customers.get(LoggedInUsr).getRoom()==RoomNum)
 					{
 					if(!Customers.get(LoggedInUsr).getCheckInStat())//if checked in, no cancel
+						{
+						btnCancel.setText("Cancel");
 						btnCancel.setVisible(true);
+						}
+					else
+						{
+						btnCancel.setText("Extend");
+						btnCancel.setVisible(true);
+						}
 					if(Customers.get(LoggedInUsr).getCheckInStat())//if customer checked in
 						btnBook.setText("Check Out");
 					else
 						btnBook.setText("Check In");
+					
 					}
-			else if(RegRooms.get(RoomNum).getStatus().equals("Occupied")||RegRooms.get(RoomNum).getStatus().equals("Booked"))
+				else if(Customers.get(LoggedInUsr).getWLroom()==RoomNum)
+				{
+					btnCancel.setText("Quit");
+					btnCancel.setVisible(true);
+				}
+				}
+			else if(RegRooms.get(RoomNum).getStatus().equals("Occupied")||RegRooms.get(RoomNum).getStatus().equals("Booked")||RegRooms.get(RoomNum).getStatus().equals("Reserved"))
 				btnBook.setText("Join Queue");
 			btnBook.setBounds(90, 170, 100, 27);
 			btnBook.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(btnBook.getText().equals("Book"))
-							Book(RoomNum);
+						{
+							boolean judge=true;
+							for(Entry<String, Double> i:cart.getEntrySets())//go through the cart to see if there is any booking options
+		                	{
+		                		String temp=i.getKey().substring(0,3);
+		                		if(isParsableInt(temp)&&(RegRooms.containsKey(Integer.parseInt(temp))||VIPRooms.containsKey(Integer.parseInt(temp))))//if it is a valid room opt
+		                		{
+		                			judge=false;//no double booking
+		                			break;
+		                		}
+		                	}
+							if(judge)
+								Book(RoomNum);
+							else
+								JOptionPane.showMessageDialog(null,"No double booking!","Warning!",JOptionPane.INFORMATION_MESSAGE);
+						}
 						else if(btnBook.getText().equals("Check In"))
 							{
 							CheckIn();
@@ -809,6 +866,7 @@ public class HotelDriver implements GeneralOperations{
 						else if(btnBook.getText().equals("Check Out"))
 						{
 							CheckOut();
+							RegRooms.get(RoomNum).setDesiredCheckOut(null);
 							if(RegRooms.get(RoomNum).isNext())
 								RegRooms.get(RoomNum).setStatus("Reserved");
 							else	
@@ -819,7 +877,13 @@ public class HotelDriver implements GeneralOperations{
 							frame.setVisible(false);
 						}
 						else if(btnBook.getText().equals("Join Queue"))
-							JoinQueue(RoomNum);
+						{
+							if(Customers.get(LoggedInUsr).getWLroom()==0)
+								JoinQueue(RoomNum);
+							else
+								JOptionPane.showMessageDialog(null, "Can only join one waitlist","Warning",JOptionPane.INFORMATION_MESSAGE);
+						}
+						
 				}
 			});
 			frame.getContentPane().add(btnBook);
@@ -843,7 +907,7 @@ public class HotelDriver implements GeneralOperations{
 		
 	}
 	
-	private static Color RoomStatsColor(int RoomNum)
+	private static Color RoomStatsColor(int RoomNum)//a method to get color
 	{
 		if(VIPRooms.containsKey(RoomNum))
 		{
@@ -921,7 +985,27 @@ public class HotelDriver implements GeneralOperations{
 		JCheckBox chckbxPets = new JCheckBox("Pets?");
 		chckbxPets.setBounds(105, 173, 70, 25);
 		Book.getContentPane().add(chckbxPets);
-		
+		chckbxPets.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {//update total if box is checked
+                try {
+                	int days=Integer.parseInt(txtDays.getText());
+	                GlobalDays=days;
+	                boolean WithPet=chckbxPets.isSelected();
+	                Customers.get(LoggedInUsr).setWithPets(WithPet);
+                	if(Vrm!=null)//calculate total price with the built in method
+	                	total=Vrm.calcPrice(days,WithPet);
+	                else
+	                	total=rm.calcPrice(days, WithPet);
+                	lblTotalPrice_1.setText(""+total);
+                }
+                catch(NumberFormatException e7)
+                {
+                	JOptionPane.showMessageDialog(null, "Enter correct days","Error",JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+			
 		JTextField TextNumofAccom = new JTextField();
 		TextNumofAccom.setBounds(300, 177, 20, 21);
 		TextNumofAccom.setText("0");
@@ -932,6 +1016,7 @@ public class HotelDriver implements GeneralOperations{
 		lblNewLabel.setBounds(180, 177, 114, 17);
 		Book.getContentPane().add(lblNewLabel);
 		
+		//locate room type
 		if(VIPRooms.containsKey(RoomNum))
 		{
 			Vrm=VIPRooms.get(RoomNum);
@@ -962,10 +1047,10 @@ public class HotelDriver implements GeneralOperations{
 		                GlobalDays=days;
 		                boolean WithPet=chckbxPets.isSelected();
 		                Customers.get(LoggedInUsr).setWithPets(WithPet);
-		                if(Vrm!=null)
+		                if(Vrm!=null)//calculate total price with the built in method
 		                	total=Vrm.calcPrice(days,WithPet);
 		                else
-		                	total=rm.calcPrice(days, WithPet);//need to move the with pet and those things to book page not as property
+		                	total=rm.calcPrice(days, WithPet);
 		                lblTotalPrice_1.setText(""+total);
             		}
                 }
@@ -976,7 +1061,7 @@ public class HotelDriver implements GeneralOperations{
 			public void actionPerformed(ActionEvent e) {
 				String dt=txtCheckindate.getText();
 				Calendar cal=Calendar.getInstance();
-				try{
+				try{//set desired check in date to room obj
 					cal.set(Integer.parseInt(dt.substring(0,4)),Integer.parseInt(dt.substring(4, 6))-1,Integer.parseInt(dt.substring(6, 8)));
 					DesiredDate=cal.getTime();
 					System.out.println(DesiredDate);
@@ -1149,7 +1234,7 @@ public class HotelDriver implements GeneralOperations{
 		btn302.setBackground(RoomStatsColor(302));
 		btn303.setBackground(RoomStatsColor(303));
 		btn304.setBackground(RoomStatsColor(304));
-		btn304.setBackground(RoomStatsColor(304));
+		btn305.setBackground(RoomStatsColor(305));
 	}
 	
 	public static void CheckIn()
@@ -1166,7 +1251,7 @@ public class HotelDriver implements GeneralOperations{
 		Customers.get(LoggedInUsr).setWithPets(false);
 		JOptionPane.showMessageDialog(null, "Check Out Time: " +checkouttime.toString(),"Check In",JOptionPane.INFORMATION_MESSAGE);
 		Customers.get(LoggedInUsr).resetCheckIn();	
-		
+
 	}
 	
 	public static void Cancel(int roomNum)
@@ -1195,7 +1280,38 @@ public class HotelDriver implements GeneralOperations{
         }
         JOptionPane.showMessageDialog(null,"Cancelled Successfully","POP UP",JOptionPane.INFORMATION_MESSAGE);
         updateStatus();
+        SaveMechanism.SaveCustomers(Customers);
+        SaveMechanism.SaveVIPRooms(VIPRooms);
+        SaveMechanism.SaveRegRooms(RegRooms);
 		///Add Refund method here///
+	}
+	
+	public static void QuitWL(int roomNum)
+	{
+		Customers.get(LoggedInUsr).setWLroom(0);
+        if(RegRooms.containsKey(roomNum))
+        {
+        	rm=RegRooms.get(roomNum);
+        	rm.quitWaitingQueue(LoggedInUsr);
+        	if(rm.isNext())
+        		rm.setStatus("Booked");//Admin choice of method to notify next customer in the queue
+        	else
+        		rm.setStatus("Available");
+        }
+        else if(VIPRooms.containsKey(roomNum))
+        {
+        	Vrm=VIPRooms.get(roomNum);
+        	Vrm.setCurrentResident(LoggedInUsr);
+        	if(Vrm.isNext())
+        		Vrm.setStatus("Booked");//Admin choice of method to notify next customer in the queue
+        	else
+        		Vrm.setStatus("Available");
+        }
+        JOptionPane.showMessageDialog(null,"Cancelled Successfully","POP UP",JOptionPane.INFORMATION_MESSAGE);
+        updateStatus();
+        SaveMechanism.SaveCustomers(Customers);
+        SaveMechanism.SaveVIPRooms(VIPRooms);
+        SaveMechanism.SaveRegRooms(RegRooms);
 	}
 	
 	public static void ExtendDate(int roomNum)
@@ -1284,7 +1400,12 @@ public class HotelDriver implements GeneralOperations{
 			Vrm=VIPRooms.get(RoomNum);
 			Vrm.joinWaitingQueue(LoggedInUsr);
 		}
+		Customers.get(LoggedInUsr).setWLroom(RoomNum);
 		JOptionPane.showMessageDialog(null, "Successfully join the queue","POP UP",JOptionPane.INFORMATION_MESSAGE);
+		SaveMechanism.SaveCustomers(Customers);
+        SaveMechanism.SaveVIPRooms(VIPRooms);
+        SaveMechanism.SaveRegRooms(RegRooms);
+
 	}
 	
 	///this method is use for calling the next one in the queue
@@ -1308,153 +1429,89 @@ public class HotelDriver implements GeneralOperations{
 	
 	private void AdminMod()
 	{
-	
-		Scanner scanner = new Scanner(System.in);
+	//if scanner never closed
+		try (Scanner scanner = new Scanner(System.in)) {
+			System.out.println("Welcome to the Admin Mod");
+			System.out.println("h for help");
 
-        System.out.println("Welcome to the Admin Mod");
-        System.out.println("h for help");
+			while (true) {
+			    System.out.print("> ");
+			    String input = scanner.nextLine().trim();
+			    String[] parts = input.split(" ", 2);
+			    String command = parts[0].toLowerCase();
 
-        while (true) {
-            System.out.print("> ");
-            String input = scanner.nextLine().trim();
-            String[] parts = input.split(" ", 2);
-            String command = parts[0].toLowerCase();
+			    switch (command) {
+			        case "h":
+			            System.out.println(
+			            		///general operations
+			            		"h:    "+"help"+
+			            		"\nq:    "+"quit"+
+			            		"\nexit: "+"exit"+
+			            		"\nl:    "+"print all staffs"+
+			            		"\nlm:   "+"print all managers"+
+			            		"\nlr:   "+"print all regular staffs"+
+			            		"\nf:    "+"find specific staff"+
+			            		"\ncr:   "+"check all rooms"+
+			            		"\ncvpr: "+"check vip rooms"+
+			            		"\ncrgr: "+"check regular rooms"
+			            );
+			            break;
 
-            switch (command) {
-                case "h":
-                    System.out.println(
-                    		///general operations
-                    		"h:    "+"help"+
-                    		"\nq:    "+"quit"+
-                    		"\nexit: "+"exit"+
-                    		"\nl:    "+"print all staffs"+
-                    		"\nlm:   "+"print all managers"+
-                    		"\nlr:   "+"print all regular staffs"+
-                    		"\nf:    "+"find specific staff"+
-                    		"\nc:    "+"change salary"+
-                    		"\ncs:   "+"check salary"+
-                    		"\nfir:  "+"fire a staff"+
-                    		"\ngd:   "+"get job description"+
-                    		"\nsgd:  "+"set job description"+
-                    		"\ngjb:  "+"get job type"+
-                    		"\nsjb:  "+"set job type"+
-                    		"\ngje:  "+"get job experience"+
-                    		"\nsje:  "+"set job experience"+
-                    		"\ngjt:  "+"get work time"+
-                    		"\nsjt:  "+"set work time"+
-                    		"\n///////////////////////////////////////"+
-                    		"\nManager Option:"+
-                    		"\ngsb:  "+"get suborinates"+
-                    		"\nssb:  "+"set subordinates"+
-                    		"\nadsb: "+"add subordinate"+
-                    		"\nrmsb: "+"remove subordinate"+
-                    		"\nhm:   "+"hire a manager"+
-                    		"\n///////////////////////////////////////"+
-                    		"\nReg Worker Option:"+
-                    		"\ngsup:  "+"get supervisor"+
-                    		"\nssup:  "+"set supervisor"+
-                    		"\nhrg:   "+"hire a worker"+
-                    		"\n///////////////////////////////////////"+
-                    		"\nRooms Option:"+
-                    		"\ncr:    "+"check all rooms"+
-                    		"\ncvpr: "+"check vip rooms"+
-                    		"\ncrgr: "+"check regular rooms"
-                    );
-                    break;
+			        case "l":
+			        	for(Manager i:Managers.values())
+			        		System.out.println(i);
+			            for(RegWorker i:RegStaffs.values())
+			            	System.out.println(i);
+			            break;
 
-                case "l":
-                    
-                    break;
+			        case "lm":
+			        	for(Manager i:Managers.values())
+			        		System.out.println(i);
+			            break;
 
-                case "lm":
+			        case "lr":
+			        	for(RegWorker i:RegStaffs.values())
+			            	System.out.println(i);
+			            break;
 
-                    break;
-
-                case "lr":
-
-                    break;
-
-                case "f":
-
-                    break;
-                case "c":
-                	
-                	break;
-                case "cs":
-                	
-                	break;
-                case "fir":
-                	
-                	break;
-				case "gd":
-				                	
-					break;
-				case "sgd":
-					
-					break;
-				case "gjb":
-					
-					break;
-				case "sjb":
-					
-					break;
-				case "gje":
-					
-					break;
-				case "sje":
-					
-					break;
-				case "gjt":
-					
-					break;
-				case "sjt":
-					
-					break;
-				case "gsb":
-					
-					break;
-				case "ssb":
-					
-					break;
-				case "adsb":
-					
-					break;
-				case "rmsb":
-				                	
-					break;
-				case "hm":
-					
-					break;
-				case "gsup":
-					
-					break;
-				case "ssup":
-					
-					break;
-				case "hrg":
-					
-					break;
-				case "cr":
-					
-					break;
-				case "cvpr":
-					
-					break;
-				case "crgr":
-					
-					break;
-                	
-                case "q":
-                    System.out.println("Exiting Admin Mod.");
-                    frame.setVisible(true);
-                    return;
-                case "exit":
-                	System.exit(0);//shutdown the program
-                	return;
-                default:
-                    System.out.println("Unknown command.");
-            }
-        }
+			        case "f":
+			        	System.out.println("Enter the name: ");
+			        	String name= scanner.nextLine();
+			        	if(Managers.containsKey(name))
+			        		System.out.println("Manager:"+Managers.get(name).toString());
+			        	else if(RegStaffs.containsKey(name))
+			        		System.out.println("RegStaff:"+Managers.get(name).toString());
+			        	else
+			        		System.out.println("No such person");
+			        	break;
+			        	
+					case "cr":
+						for(VIPRoom i:VIPRooms.values())
+							System.out.println(i.toString());
+						for(Room i:RegRooms.values())
+							System.out.println(i.toString());
+						break;
+					case "cvpr":
+						for(VIPRoom i:VIPRooms.values())
+							System.out.println(i.toString());
+						break;
+					case "crgr":
+						for(Room i:RegRooms.values())
+							System.out.println(i.toString());
+						break;
+			        	
+			        case "q":
+			            System.out.println("Exiting Admin Mod.");
+			            frame.setVisible(true);
+			            return;
+			        case "exit":
+			        	System.exit(0);//shutdown the program
+			        	return;
+			        default:
+			            System.out.println("Unknown command.");
+			    }
+			}
+		}
     
 	}
 	

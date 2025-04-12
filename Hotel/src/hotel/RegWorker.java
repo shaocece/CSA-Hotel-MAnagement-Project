@@ -5,8 +5,7 @@ public class RegWorker extends Staffs implements Serializable{
 	private String Supervisor;
 	public RegWorker(			
 			String First_Name, String Last_Name, String gender, String number, int age,
-			double salary,String jobtype, int WorkingExperience, int workTime, String jobDescription,
-			Manager Supervisor
+			double salary,String jobtype, int WorkingExperience, int workTime, String jobDescription
 			)
 	{
 		super(First_Name, Last_Name, gender, number, age,

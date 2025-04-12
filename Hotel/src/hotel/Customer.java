@@ -14,6 +14,7 @@ public class Customer extends Human implements Serializable{
 	private Date CheckOutTime;
 	private int room=0;
 	private boolean WithPets=false;
+	private int WLroom=0;
 	
 	public Customer(String First_Name, String Last_Name,String gender,String number, int age)
 	{
@@ -125,5 +126,13 @@ public class Customer extends Human implements Serializable{
 
 	public void setWithPets(boolean withPets) {
 		WithPets = withPets;
+	}
+
+	public int getWLroom() {
+		return WLroom;
+	}
+
+	public void setWLroom(int wLroom) {
+		WLroom = wLroom;
 	}
 }

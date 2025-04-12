@@ -9,7 +9,7 @@ public class SaveMechanism {
 	private static final String CustomersFile=path+"Customers.ser";
 	private static final String RegRoomsFile=path+"RegRooms.ser";
 	private static final String VIPRoomsFile=path+"VIPRooms.ser";
-	public static void initialize()//create the folder for datas
+	public static void initialize()//create the folder for datas also auto generate files if not there
 	{
 		File FolderPath=new File(path);
 		if (!FolderPath.exists()){
@@ -41,7 +41,7 @@ public class SaveMechanism {
 	    	SaveVIPRooms(VIPRm);
 		}
 	}
-	public static void SaveManagers(HashMap<String, Manager> staffList)//Save as pair of manager and working hours
+	public static void SaveManagers(HashMap<String, Manager> staffList)//Save as pair of Full name+obj
 	{
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ManagersFile))) {
             oos.writeObject(staffList);
@@ -68,7 +68,7 @@ public class SaveMechanism {
             e.printStackTrace();
         }
 	}
-	public static void SaveRegRooms(HashMap<Integer,Room> roomList)//Room and status
+	public static void SaveRegRooms(HashMap<Integer,Room> roomList)//Num+Status
 	{
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(RegRoomsFile))) {
             oos.writeObject(roomList);
@@ -86,8 +86,7 @@ public class SaveMechanism {
             e.printStackTrace();
         }
 	}
-//	public void SaveExtraItems()
-//	{}
+
 	@SuppressWarnings("unchecked")
 	public static HashMap<String,RegWorker> ReadRegStaffs()
 		{   
@@ -161,42 +160,42 @@ public class SaveMechanism {
 //		HashMap<String,Customer> Customers=ReadCustomers();
 //		System.out.println(Customers.toString());
 //		JOptionPane.showMessageDialog(null, "Successfully Signed Up!\nYour User Name is first name+UpperCased first letter of last name","Congrats",JOptionPane.INFORMATION_MESSAGE);
-////For adding rooms
-		HashMap<Integer,VIPRoom> l=new HashMap<Integer,VIPRoom>();
-		HashMap<Integer,Room> m=new HashMap<Integer,Room>();
-		Room R101=new Room(101, 49.99, "Available", "Single");
-		Room R102=new Room(102, 56.99, "Available","Double");
-		Room R103=new Room(103, 56.99, "Available", "Double");
-		Room R201=new Room(201, 49.99, "Available", "Single");
-		Room R202=new Room(202, 49.99, "Available", "Single");
-		Room R203=new Room(203, 56.99, "Available", "Double");
-		m.put(101, R101);
-		m.put(102, R102);
-		m.put(103, R103);
-		m.put(201, R201);
-		m.put(202, R202);
-		m.put(203, R203);
-		VIPRoom R302=new VIPRoom(302, 109, "Available", "Fancy", "Comfort", "Wide");
-		VIPRoom R301=new VIPRoom(301, 129, "Available", "Fancy", "Fancy", "Huge");
-		VIPRoom R303=new VIPRoom(303, 139, "Available", "Fancy", "Fancy", "Fancy");
-		l.put(301, R301);
-		l.put(302, R302);
-		l.put(303, R303);
-		
-		Room R104=new Room(104, 69.99, "Available", "Two Singles");
-		Room R105=new Room(105, 69.99, "Available", "Two Singles");
-		Room R204=new Room(204, 72.99, "Available", "Two Singles");
-		Room R205=new Room(205, 76.99, "Available", "Three Singles");
-		VIPRoom R304=new VIPRoom(304, 149, "Available", "Double Fancys", "Fancy", "Huge");
-		VIPRoom R305=new VIPRoom(305, 159, "Available", "Three Fancys", "Luxury", "Dreamy");
-		l.put(304, R304);
-		l.put(305, R305);
-		m.put(104, R104);
-		m.put(105, R105);
-		m.put(204, R204);
-		m.put(205, R205);
-		SaveRegRooms(m);
-		SaveVIPRooms(l);
+////For adding rooms and reset room
+//		HashMap<Integer,VIPRoom> l=new HashMap<Integer,VIPRoom>();
+//		HashMap<Integer,Room> m=new HashMap<Integer,Room>();
+//		Room R101=new Room(101, 49.99, "Available", "Single");
+//		Room R102=new Room(102, 56.99, "Available","Double");
+//		Room R103=new Room(103, 56.99, "Available", "Double");
+//		Room R201=new Room(201, 49.99, "Available", "Single");
+//		Room R202=new Room(202, 49.99, "Available", "Single");
+//		Room R203=new Room(203, 56.99, "Available", "Double");
+//		m.put(101, R101);
+//		m.put(102, R102);
+//		m.put(103, R103);
+//		m.put(201, R201);
+//		m.put(202, R202);
+//		m.put(203, R203);
+//		VIPRoom R302=new VIPRoom(302, 109, "Available", "Fancy", "Comfort", "Wide");
+//		VIPRoom R301=new VIPRoom(301, 129, "Available", "Fancy", "Fancy", "Huge");
+//		VIPRoom R303=new VIPRoom(303, 139, "Available", "Fancy", "Fancy", "Fancy");
+//		l.put(301, R301);
+//		l.put(302, R302);
+//		l.put(303, R303);
+//		
+//		Room R104=new Room(104, 69.99, "Available", "Two Singles");
+//		Room R105=new Room(105, 69.99, "Available", "Two Singles");
+//		Room R204=new Room(204, 72.99, "Available", "Two Singles");
+//		Room R205=new Room(205, 76.99, "Available", "Three Singles");
+//		VIPRoom R304=new VIPRoom(304, 149, "Available", "Double Fancys", "Fancy", "Huge");
+//		VIPRoom R305=new VIPRoom(305, 159, "Available", "Three Fancys", "Luxury", "Dreamy");
+//		l.put(304, R304);
+//		l.put(305, R305);
+//		m.put(104, R104);
+//		m.put(105, R105);
+//		m.put(204, R204);
+//		m.put(205, R205);
+//		SaveRegRooms(m);
+//		SaveVIPRooms(l);
 		
 		
 //		HashMap<Integer,VIPRoom> l=ReadVIPRooms();

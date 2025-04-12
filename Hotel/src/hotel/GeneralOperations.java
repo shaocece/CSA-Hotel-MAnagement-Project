@@ -1,7 +1,7 @@
 package hotel;
 
 public interface GeneralOperations {
-	///operations that Usr can do
+	///operations that Usr can perform
 	public static void Book(int RoomNum) {
 	}
 	public void LogIn();
@@ -12,4 +12,5 @@ public interface GeneralOperations {
 	public static void ExtendDate(int roomNum) {}
 	public void checkCart();
 	public static void JoinQueue(int RoomNum) {}
+	public static void QuitWL(int RoomNum) {}
 }
